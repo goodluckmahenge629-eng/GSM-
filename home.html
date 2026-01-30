@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - GSM Food Ordering System</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color:green;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+
+        .header nav a {
+            margin: 0 15px;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .header nav a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+        }
+
+        .register-form {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            width: 300px;
+        }
+
+        .register-form h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .register-form label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        .register-form input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .register-form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .register-form button:hover {
+            background-color: #0056b3;
+        }
+
+        .error-msg {
+            color: red;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .success-msg {
+            color: green;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <h1>GSM Food Ordering System</h1>
+    <nav>
+        <a href="Home page.html">Home</a>
+        <a href="produc.html">product</a>
+        <a herf=" about page.html">about</a>
+        <a href="categories.html">Categories</a>
+        <a href="home.html">Login</a>
+        <a href="register.html">Register</a>
+    </nav>
+</header>
+
+<main>
+    <form class="register-form" id="registerForm">
+        <h2>Register</h2>
+        <p class="error-msg" id="error-msg"></p>
+        <p class="success-msg" id="success-msg"></p>
+
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Enter username" required>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter password" required>
+
+        <label for="confirm-password">Confirm Password</label>
+        <input type="password" id="confirm-password" placeholder="Confirm password" required>
+
+        <button type="submit">Register</button>
+    </form>
+</main>
+
+<footer>
+    © GSM food ordering System
+</footer>
+
+<script>
+    const registerForm = document.getElementById('registerForm');
+    const errorMsg = document.getElementById('error-msg');
+    const successMsg = document.getElementById('success-msg');
+
+    registerForm.addEventListener('submit', function(e) {
+        e.preventDefault(); // prevent form submission
+
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const confirmPassword = document.getElementById('confirm-password').value.trim();
+
+        // Clear messages
+        errorMsg.textContent = "";
+        successMsg.textContent = "";
+
+        // Basic validation
+        if(username === '' || password === '' || confirmPassword === '') {
+            errorMsg.textContent = "Please fill in all fields!";
+            return;
+        }
+
+        if(password !== confirmPassword) {
+            errorMsg.textContent = "Passwords do not match!";
+            return;
+        }
+
+        // Get existing users from localStorage
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+
+        // Check if username already exists
+        const existingUser = users.find(user => user.username === username);
+        if(existingUser){
+            errorMsg.textContent = "Username already taken!";
+            return;
+        }
+
+        // Add new user
+        users.push({username: username, password: password});
+        localStorage.setItem('users', JSON.stringify(users));
+
+        successMsg.textContent = "Registration successful! Redirecting to login...";
+        setTimeout(() => {
+            window.location.href = "login.html";
+        }, 2000);
+    });
+</script>
+
+</body>
+</html>
