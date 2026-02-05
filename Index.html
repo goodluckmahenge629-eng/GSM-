@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GSM Food Ordering System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        /* Header */
+        .header {
+            background-color: #4a0072;
+            color: white;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 24px;
+        }
+        
+        /* Navigation */
+        .navbar {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .nav-btn {
+            background-color: #6a0099;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-btn:hover {
+            background-color: #8a00cc;
+        }
+        
+        .nav-btn.active {
+            background-color: #ff9900;
+            color: #333;
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-height: 500px;
+        }
+        
+        /* Page Content */
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .btn {
+            background-color: #4a0072;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #6a0099;
+        }
+        
+        .btn-orange {
+            background-color: #ff9900;
+            color: #333;
+        }
+        
+        .btn-orange:hover {
+            background-color: #e68a00;
+        }
+        
+        /* Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        /* Cart */
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .cart-total {
+            text-align: right;
+            margin-top: 2rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: #4a0072;
+            color: white;
+            margin-top: 3rem;
+        }
+        
+        /* Alert */
+        .alert {
+            padding: 1rem;
+            background-color: #d4edda;
+            color: #155724;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+            
+            .navbar {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-btn {
+                width: 200px;
+            }
+            
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>GSM Food Ordering System</h1>
+        <div class="navbar">
+            <button class="nav-btn active" onclick="showPage('home')">🏠 Home</button>
+            <button class="nav-btn" onclick="showPage('register')">📝 Register</button>
+            <button class="nav-btn" onclick="showPage('login')">🔐 Login</button>
+            <button class="nav-btn" onclick="showPage('products')">🛒 Products</button>
+            <button class="nav-btn" onclick="showPage('categories')">📂 Categories</button>
+            <button class="nav-btn" onclick="showPage('about')">ℹ️ About</button>
+            <button class="nav-btn" onclick="showPage('contact')">📞 Contact</button>
+        </div>
+    </header>
+
+    <!-- Alert Message -->
+    <div id="alert" class="alert"></div>
+
+    <!-- Main Content Container -->
+    <div class="container">
+        <!-- HOME PAGE -->
+        <div id="home" class="page active">
+            <h2>Welcome to GSM Food Ordering</h2>
+            <p style="margin: 1rem 0;">Order fresh and healthy meals for better health!</p>
+            
+            <div style="text-align: center; margin: 2rem 0;">
+                <button class="btn btn-orange" onclick="showPage('products')">🍽️ Order Now</button>
+            </div>
+            
+            <div style="background: #e8f5e9; padding: 2rem; border-radius: 8px; margin-top: 2rem;">
+                <h3>🌟 Today's Special Offers</h3>
+                <ul style="margin-top: 1rem;">
+                    <li>Fresh Organic Vegetables - 20% OFF</li>
+                    <li>Healthy Grains Combo - TSH 15000</li>
+                    <li>Free Delivery on orders above TSH 30000</li>
+                </ul>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <h3>🚚 Fast Delivery</h3>
+                <p>We deliver within 1 hour in dar es salaam area.</p>
+            </div>
+        </div>
+
+        <!-- REGISTER PAGE -->
+        <div id="register" class="page">
+            <h2>Create Your Account</h2>
+            <form id="registerForm" onsubmit="registerUser(event)">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="regName" required placeholder="Enter your full name">
+                </div>
+                
+                <div class="form-group">
+                    <label>Email Address *</label>
+                    <input type="email" id="regEmail" required placeholder="example@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Phone Number *</label>
+                    <input type="tel" id="regPhone" required placeholder="07XX XXX XXX">
+                </div>
+                
+                <div class="form-group">
+                    <label>Password *</label>
+                    <input type="password" id="regPassword" required placeholder="Create a password">
+                </div>
+                
+                <button type="submit" class="btn">Create Account</button>
+            </form>
+            
+            <p style="margin-top: 1rem;">
+                Already have an account? <a href="#" onclick="showPage('login')">Login here</a>
+            </p>
+        </div>
+
+        <!-- LOGIN PAGE -->
+        <div id="login" class="page">
+            <h2>Login to Your Account</h2>
+            <form id="loginForm" onsubmit="loginUser(event)">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" required placeholder="example@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" required placeholder="Enter your password">
+                </div>
+                
+                <button type="submit" class="btn">Login</button>
+            </form>
+            
+            <p style="margin-top: 1rem;">
+                New user? <a href="#" onclick="showPage('register')">Create account</a>
+            </p>
+        </div>
+
+        <!-- PRODUCTS PAGE -->
+        <div id="products" class="page">
+            <h2>Our Products</h2>
+            <p>Select fresh and healthy food items</p>
+            
+            <div class="product-grid">
+                <div class="product-card">
+                    <h3>🥦 Fresh Vegetables</h3>
+                    <p style="color: #4a0072; font-weight: bold; margin: 10px 0;">TSH 5000</p>
+                    <p>Organic vegetables pack</p>
+                    <button class="btn" onclick="addToCart('Fresh Vegetables', 500)">ORDER</button>
+                </div>
+                
+                <div class="product-card">
+                    <h3>🍎 Organic Fruits</h3>
+                    <p style="color: #4a0072; font-weight: bold; margin: 10px 0;">TSH 7000</p>
+                    <p>Seasonal fruits basket</p>
+                    <button class="btn" onclick="addToCart('Organic Fruits', 700)">ORDER</button>
+                </div>
+                
+                <div class="product-card">
+                    <h3>🌾 Healthy Grains</h3>
+                    <p style="color: #4a0072; font-weight: bold; margin: 10px 0;">TSH 9000</p>
+                    <p>Mixed grains package</p>
+                    <button class="btn" onclick="addToCart('Healthy Grains', 900)">ORDER</button>
+                </div>
+                
+                <div class="product-card">
+                    <h3>🥛 Fresh Milk</h3>
+                    <p style="color: #4a0072; font-weight: bold; margin: 10px 0;">TSH 3000</p>
+                    <p>1 liter fresh milk</p>
+                    <button class="btn" onclick="addToCart('Fresh Milk', 300)">ORDER</button>
+                </div>
+            </div>
+            
+            <div id="cartSection" style="margin-top: 3rem; display: none;">
+                <h3>🛒 Your Shopping Cart</h3>
+                <div id="cartItems"></div>
+                <div id="cartTotal" class="cart-total"></div>
+                <button class="btn btn-orange" onclick="checkout()">Checkout</button>
+            </div>
+        </div>
+
+        <!-- CATEGORIES PAGE -->
+        <div id="categories" class="page">
+            <h2>Food Categories</h2>
+            <p>Browse our food categories</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Items Available</th>
+                        <th>Price Range</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>🥬 Vegetables</td>
+                        <td>15 items</td>
+                        <td>TSH 2000 - 10000</td>
+                        <td><button class="btn" onclick="showPage('products')">View</button></td>
+                    </tr>
+                    <tr>
+                        <td>🍓 Fruits</td>
+                        <td>12 items</td>
+                        <td>TSH 3000 - 15000</td>
+                        <td><button class="btn" onclick="showPage('products')">View</button></td>
+                    </tr>
+                    <tr>
+                        <td>🌾 Grains</td>
+                        <td>8 items</td>
+                        <td>TSH 5000 - 20000</td>
+                        <td><button class="btn" onclick="showPage('products')">View</button></td>
+                    </tr>
+                    <tr>
+                        <td>🥛 Dairy</td>
+                        <td>10 items</td>
+                        <td>TSH 15000 - 80000</td>
+                        <td><button class="btn" onclick="showPage('products')">View</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ABOUT PAGE -->
+        <div id="about" class="page">
+            <h2>About GSM Food</h2>
+            
+            <div style="margin-top: 2rem;">
+                <h3>Our Mission</h3>
+                <p>To provide fresh, healthy, and affordable food to our customers for better health and wellbeing.</p>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <h3>Our Vision</h3>
+                <p>To be the leading food delivery service promoting healthy eating habits in our community.</p>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <h3>📍 Location</h3>
+                <p>TEMEKE, DAR ES SALAAM</p>
+                <p>Open: Monday - Sunday, 8:00 AM - 10:00 PM</p>
+            </div>
+            
+            <div style="margin-top: 2rem; background: #f0f0f0; padding: 1.5rem; border-radius: 8px;">
+                <h3>Why Choose Us?</h3>
+                <ul style="margin-top: 1rem;">
+                    <li>✅ Fresh and Organic Products</li>
+                    <li>✅ Fast Delivery Service</li>
+                    <li>✅ Affordable Prices</li>
+                    <li>✅ Quality Guarantee</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- CONTACT PAGE -->
+        <div id="contact" class="page">
+            <h2>Contact Us</h2>
+            
+            <form id="contactForm" onsubmit="sendMessage(event)">
+                <div class="form-group">
+                    <label>Your Name *</label>
+                    <input type="text" id="contactName" required placeholder="Enter your name">
+                </div>
+                
+                <div class="form-group">
+                    <label>Email Address *</label>
+                    <input type="email" id="contactEmail" required placeholder="example@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="contactPhone" placeholder="07XX XXX XXX">
+                </div>
+                
+                <div class="form-group">
+                    <label>Message *</label>
+                    <textarea id="contactMessage" rows="5" required placeholder="Type your message here..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn">Send Message</button>
+            </form>
+            
+            <div style="margin-top: 3rem;">
+                <h3>Contact Information</h3>
+                <p>📧 Email: gsmfoododering@gmail.com</p>
+                <p>📞 Phone: 0742646023</p>
+                <p>🏢 Address: TEMEKE ,DAR ES SALAAM</p>
+                <p>⏰ Hours: 8:00 AM - 10:00 PM Daily</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 GSM Food Ordering System. All rights reserved.</p>
+        <p style="margin-top: 10px; font-size: 0.9em;">Fresh Food for Healthy Living</p>
+    </footer>
+
+    <script>
+        // Current user and cart data
+        let currentUser = null;
+        let cart = [];
+        
+        // Show specific page and hide others
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Update active navigation button
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.includes(getButtonText(pageId))) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+            
+            // Show welcome alert for home page
+            if (pageId === 'home') {
+                showAlert('Welcome to GSM Food Ordering System!', 'info');
+            }
+        }
+        
+        // Get button text from page ID
+        function getButtonText(pageId) {
+            const texts = {
+                'home': 'Home',
+                'register': 'Register',
+                'login': 'Login',
+                'products': 'Products',
+                'categories': 'Categories',
+                'about': 'About',
+                'contact': 'Contact'
+            };
+            return texts[pageId] || '';
+        }
+        
+        // Show alert message
+        function showAlert(message, type = 'info') {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.textContent = message;
+            alertDiv.style.display = 'block';
+            
+            // Set color based on type
+            if (type === 'success') {
+                alertDiv.style.backgroundColor = '#d4edda';
+                alertDiv.style.color = '#155724';
+            } else if (type === 'error') {
+                alertDiv.style.backgroundColor = '#f8d7da';
+                alertDiv.style.color = '#721c24';
+            } else {
+                alertDiv.style.backgroundColor = '#d1ecf1';
+                alertDiv.style.color = '#0c5460';
+            }
+            
+            // Hide alert after 3 seconds
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Register user
+        function registerUser(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const phone = document.getElementById('regPhone').value;
+            const password = document.getElementById('regPassword').value;
+            
+            // Simple validation
+            if (!name || !email || !phone || !password) {
+                showAlert('Please fill all fields', 'error');
+                return;
+            }
+            
+            // Save user (in real app, this would go to server)
+            currentUser = { name, email, phone };
+            
+            showAlert(`Welcome ${name}! Registration successful.`, 'success');
+            setTimeout(() => {
+                showPage('login');
+                // Clear form
+                document.getElementById('registerForm').reset();
+            }, 1500);
+        }
+        
+        // Login user
+        function loginUser(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                showAlert('Please enter email and password', 'error');
+                return;
+            }
+            
+            // Simulate login (in real app, check with server)
+            if (!currentUser) {
+                currentUser = { name: 'Guest User', email };
+            }
+            
+            showAlert(`Welcome back ${currentUser.name}!`, 'success');
+            setTimeout(() => {
+                showPage('products');
+                // Clear form
+                document.getElementById('loginForm').reset();
+            }, 1500);
+        }
+        
+        // Add item to cart
+        function addToCart(itemName, price) {
+            if (!currentUser) {
+                showAlert('Please login first to add items to cart', 'error');
+                showPage('login');
+                return;
+            }
+            
+            cart.push({ name: itemName, price: price });
+            updateCartDisplay();
+            showAlert(`${itemName} added to cart!`, 'success');
+        }
+        
+        // Update cart display
+        function updateCartDisplay() {
+            const cartSection = document.getElementById('cartSection');
+            const cartItemsDiv = document.getElementById('cartItems');
+            const cartTotalDiv = document.getElementById('cartTotal');
+            
+            if (cart.length === 0) {
+                cartSection.style.display = 'none';
+                return;
+            }
+            
+            cartSection.style.display = 'block';
+            
+            // Clear previous items
+            cartItemsDiv.innerHTML = '';
+            
+            let total = 0;
+            cart.forEach((item, index) => {
+                total += item.price;
+                
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'cart-item';
+                itemDiv.innerHTML = `
+                    <span>${item.name}</span>
+                    <span>KSH ${item.price}</span>
+                    <button class="btn" style="padding: 5px 10px; font-size: 14px;" 
+                            onclick="removeFromCart(${index})">Remove</button>
+                `;
+                cartItemsDiv.appendChild(itemDiv);
+            });
+            
+            cartTotalDiv.innerHTML = `<p>Total: KSH ${total}</p>`;
+        }
+        
+        // Remove item from cart
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartDisplay();
+            showAlert('Item removed from cart', 'info');
+        }
+        
+        // Checkout
+        function checkout() {
+            if (cart.length === 0) {
+                showAlert('Your cart is empty!', 'error');
+                return;
+            }
+            
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            showAlert(`Order placed successfully! Total: KSH ${total}. Thank you ${currentUser.name}!`, 'success');
+            
+            // Clear cart
+            cart = [];
+            updateCartDisplay();
+        }
+        
+        // Send contact message
+        function sendMessage(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('contactName').value;
+            const email = document.getElementById('contactEmail').value;
+            const message = document.getElementById('contactMessage').value;
+            
+            if (!name || !email || !message) {
+                showAlert('Please fill all required fields', 'error');
+                return;
+            }
+            
+            showAlert(`Thank you ${name}! Your message has been sent. We'll contact you soon.`, 'success');
+            
+            // Clear form
+            document.getElementById('contactForm').reset();
+        }
+        
+        // Initialize on page load
+        window.onload = function() {
+            showAlert('Welcome to GSM Food Ordering System! Order healthy food for better living.', 'info');
+        };
+    </script>
+</body>
+</html>
